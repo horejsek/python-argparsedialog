@@ -8,7 +8,7 @@ except ImportError:
 
 setup(
     name='argparsedialog',
-    version='1.1',
+    version='1.2',
     packages=['argparsedialog/'],
 
     install_requires=[line.strip() for line in open('requirements.txt').readlines()],
