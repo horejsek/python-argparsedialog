@@ -4,7 +4,8 @@ Python library converting argparse to wizzard using dialog.
 
 ## Requirements
 
-- Python 3.0 or later.
+- Python 3.0 or later
+- pythondialog
 
 ## Installation
 
