@@ -2,6 +2,7 @@
 
 import argparse
 import dialog
+import sys
 
 
 class ArgparseActionWrapper(object):
@@ -101,8 +102,9 @@ class ArgumentParser(argparse.ArgumentParser):
         d.set_background_title(self.prog)
         return d
 
-    def parse_args(self):
-        args = self.get_args()
+    def parse_args(self, args=None):
+        if len(sys.argv) == 1:
+            args = self.get_args()
         return super(ArgumentParser, self).parse_args(args)
 
     def get_args(self):

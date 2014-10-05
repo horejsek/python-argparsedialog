@@ -38,5 +38,4 @@ Why this project? Because some one likes command line arguments, someone likes w
 
 ## TODO
 
- * Support command line and wizzard (now it depends what you import).
  * Would be great to support pass some arugments from command line and for rest of them ask by wizzard.
