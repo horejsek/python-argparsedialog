@@ -92,9 +92,10 @@ class ArgumentParser(argparse.ArgumentParser):
     width = 60
 
     def __init__(self, *args, **kwds):
+        self._should_show_intro = kwds.pop('show_intro')
         super(ArgumentParser, self).__init__(*args, **kwds)
         self._dialog = self._create_dialog()
-    
+
     def _create_dialog(self):
         d = dialog.Dialog()
         d.set_background_title(self.prog)
@@ -106,7 +107,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
     def get_args(self):
         result = []
-        
+
         self._show_intro()
 
         for action in self._actions:
@@ -130,11 +131,14 @@ class ArgumentParser(argparse.ArgumentParser):
         return result
 
     def _show_intro(self):
+        if not self._should_show_intro:
+            return
+
         self._dialog.msgbox(
             'This is wizzard of %s.\nYou can also use command line arguments if you don\'t like wizzards.\n\n%s\n\n%s' % (
-                self.prog, 
-                self.description, 
-                self.epilog,
+                self.prog,
+                self.description or '',
+                self.epilog or '',
             ),
             height=15,
             width=self.width,
@@ -165,7 +169,7 @@ class ArgumentParser(argparse.ArgumentParser):
                 result.append(answer)
             if code != self._dialog.OK or index == max_index:
                 return result
-            
+
             index += 1
 
     def _get_choice_by_dialog(self, action):
