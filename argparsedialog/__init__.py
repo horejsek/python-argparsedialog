@@ -92,7 +92,7 @@ class ArgumentParser(argparse.ArgumentParser):
     width = 60
 
     def __init__(self, *args, **kwds):
-        self._should_show_intro = kwds.pop('show_intro')
+        self._should_show_intro = kwds.pop('show_intro', False)
         super(ArgumentParser, self).__init__(*args, **kwds)
         self._dialog = self._create_dialog()
 
@@ -178,9 +178,9 @@ class ArgumentParser(argparse.ArgumentParser):
             height=10+len(action.choices),
             menu_height=len(action.choices),
             width=self.width,
-            choices=[(item, '') for item in action.choices],
+            choices=[(str(idx), str(item)) for idx, item in enumerate(action.choices)],
         )
-        return action.option_string, tag
+        return action.option_string, action.choices[int(tag)]
 
     def _get_choices_by_dialog(self, action):
         code, tags = self._dialog.checklist(
@@ -188,8 +188,9 @@ class ArgumentParser(argparse.ArgumentParser):
             height=10+len(action.choices),
             list_height=len(action.choices),
             width=self.width,
-            choices=[(item, '', False) for item in action.choices],
+            choices=[(str(idx), str(item), False) for idx, item in enumerate(action.choices)],
         )
+        tags = [action.choices[int(tag)] for tag in tags]
         if action.option_string:
             for x in range(len(tags)):
                 tags.insert(x*2, action.option_string)
