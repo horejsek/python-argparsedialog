@@ -125,8 +125,6 @@ class ArgumentParser(argparse.ArgumentParser):
         self._show_intro()
 
         for action in self._actions:
-            #action = ArgparseActionWrapper(self._dialog, action)
-
             if action.is_help or action.is_version or action.no_dialog:
                 continue
             elif action.is_one_value:
@@ -194,6 +192,8 @@ class ArgumentParser(argparse.ArgumentParser):
             width=self.width,
             choices=[(str(idx), str(item)) for idx, item in enumerate(action.choices)],
         )
+        if code != self._dialog.OK:
+            return[]
         return action.option_string, action.choices[int(tag)]
 
     def _get_choices_by_dialog(self, action):
@@ -204,6 +204,8 @@ class ArgumentParser(argparse.ArgumentParser):
             width=self.width,
             choices=[(str(idx), str(item), False) for idx, item in enumerate(action.choices)],
         )
+        if code != self._dialog.OK:
+            return[]
         tags = [action.choices[int(tag)] for tag in tags]
         if action.option_string:
             for x in range(len(tags)):
@@ -215,9 +217,9 @@ class ArgumentParser(argparse.ArgumentParser):
             action.dialog_help,
             width=self.width,
         )
-        if code == self._dialog.OK:
-            return [action.option_string]
-        return []
+        if code != self._dialog.OK:
+            return []
+        return [action.option_string]
 
     def _get_count_by_dialog(self, action):
         code, answer = self._dialog.menu(
@@ -227,4 +229,6 @@ class ArgumentParser(argparse.ArgumentParser):
             width=self.width,
             choices=[(str(index), ' '.join([action.option_string] * index)) for index in range(1, 6)]
         )
+        if code != self._dialog.OK:
+            return[]
         return [action.option_string] * int(answer)
