@@ -53,6 +53,10 @@ class ArgparseActionWrapper(object):
         return 1
 
     @property
+    def no_dialog(self):
+        return not bool(self._dialog)
+
+    @property
     def is_help(self):
         return self._is_action('help')
 
@@ -94,6 +98,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwds):
         self._should_show_intro = kwds.pop('show_intro', False)
+        self._dialog = None  # __init__ calls add_argument which needs this property.
         super(ArgumentParser, self).__init__(*args, **kwds)
         self._dialog = self._create_dialog()
 
@@ -101,6 +106,13 @@ class ArgumentParser(argparse.ArgumentParser):
         d = dialog.Dialog()
         d.set_background_title(self.prog)
         return d
+
+    def add_argument(self, *args, **kwds):
+        no_dialog = kwds.pop('no_dialog', False)
+        argument = super(ArgumentParser, self).add_argument(*args, **kwds)
+        argument = ArgparseActionWrapper(None if no_dialog else self._dialog, argument)
+        self._actions[-1] = argument
+        return argument
 
     def parse_args(self, args=None):
         if len(sys.argv) == 1:
@@ -113,9 +125,9 @@ class ArgumentParser(argparse.ArgumentParser):
         self._show_intro()
 
         for action in self._actions:
-            action = ArgparseActionWrapper(self._dialog, action)
+            #action = ArgparseActionWrapper(self._dialog, action)
 
-            if action.is_help or action.is_version:
+            if action.is_help or action.is_version or action.no_dialog:
                 continue
             elif action.is_one_value:
                 result.extend(self._get_values_by_dialog(action))
